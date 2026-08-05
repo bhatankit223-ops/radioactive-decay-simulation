@@ -1,0 +1,68 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# -----------------------------------------
+# Comparison of Analytical and Monte Carlo
+# Radioactive Decay Curves
+# -----------------------------------------
+
+# Parameters
+N0 = 1000          # Initial number of nuclei
+lam = 0.1          # Decay constant (s^-1)
+dt = 0.1           # Time step (s)
+t_max = 50         # Total simulation time (s)
+
+# Time array
+time = np.arange(0, t_max + dt, dt)
+
+# -----------------------------
+# Analytical Solution
+# -----------------------------
+N_analytical = N0 * np.exp(-lam * time)
+
+# -----------------------------
+# Monte Carlo Simulation
+# -----------------------------
+N = N0
+N_monte = []
+
+np.random.seed(42)
+
+for t in time:
+    N_monte.append(N)
+
+    # Probability of decay during one time step
+    p_decay = lam * dt
+
+    # Random decay events
+    decayed = np.sum(np.random.rand(N) < p_decay)
+
+    # Update remaining nuclei
+    N -= decayed
+
+N_monte = np.array(N_monte)
+
+# -----------------------------
+# Plot Comparison
+# -----------------------------
+plt.figure(figsize=(8,5))
+
+plt.plot(time, N_analytical,
+         label='Analytical Solution',
+         linewidth=2)
+
+plt.plot(time, N_monte,
+         '--',
+         label='Monte Carlo Simulation',
+         linewidth=2)
+
+plt.xlabel("Time (s)", fontsize=12)
+plt.ylabel("Number of Remaining Nuclei", fontsize=12)
+
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.7)
+
+# Save figure
+plt.savefig("Comparison_Analytical_MonteCarlo.png", dpi=300, bbox_inches="tight")
+
+plt.show()
