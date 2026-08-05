@@ -1,0 +1,49 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Monte Carlo simulation function
+def monte_carlo_decay(N0, decay_probability=0.05, steps=100):
+    N = N0
+    remaining = [N]
+
+    for _ in range(steps):
+        decayed = np.random.binomial(N, decay_probability)
+        N -= decayed
+        remaining.append(N)
+
+    return remaining
+
+# Reproducible results
+np.random.seed(42)
+
+# Initial numbers of nuclei
+N0_values = [100, 1000, 10000, 100000]
+
+# Colors
+colors = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
+
+# Time steps
+steps = 100
+time = np.arange(steps + 1)
+
+# Plot
+plt.figure(figsize=(8,6))
+
+for N0, color in zip(N0_values, colors):
+    remaining = monte_carlo_decay(N0)
+    plt.plot(time, remaining, color=color,
+             linewidth=2,
+             label=fr'$N_0 = {N0:,}$')
+
+plt.title("Monte Carlo Simulation of Radioactive Decay", fontsize=14)
+plt.xlabel("Time Step", fontsize=12)
+plt.ylabel("Number of Undecayed Nuclei", fontsize=12)
+
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.legend(fontsize=11)
+
+plt.xlim(0, 100)
+
+plt.tight_layout()
+plt.savefig("MonteCarloSimulation.png", dpi=300)
+plt.show()
